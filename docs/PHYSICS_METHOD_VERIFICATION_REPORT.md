@@ -1,4 +1,5 @@
 # Physics Method Verification Report: Embedded vs Modular SOURCE6
+
 **Date**: December 11, 2025  
 **Analysis**: Dual Implementation Comparison for Cross-Validation  
 **Status**: ✅ **BOTH METHODS MUST BE RETAINED** - Different calculation approaches
@@ -21,6 +22,7 @@
 #### Example: UniversalGravity1 (Ug₁) Implementations
 
 **EMBEDDED Version** (MAIN_1 line 3131-3149):
+
 ```cpp
 class UnifiedFieldUg1Term : public PhysicsTerm
 {
@@ -43,6 +45,7 @@ class UnifiedFieldUg1Term : public PhysicsTerm
 ```
 
 **MODULAR Version** (source6_wolfram_physics.cpp lines 230-253):
+
 ```cpp
 class UniversalGravity1Source6Term : public PhysicsTerm
 {
@@ -148,6 +151,7 @@ if (relative_error > 1e-6) {
 ### 2. Helper Function Validation
 
 **Modular helpers can be tested independently**:
+
 ```cpp
 // Test magnetic moment helper against embedded inline formula
 MagneticMomentTimeSource6Term helper;
@@ -184,6 +188,7 @@ std::cout << "Decay sensitivity: " << (ug1_fast_decay / ug1_baseline) << "\n";
 ### 4. Regression Testing
 
 **Embedded versions serve as "golden reference"** for modular refactoring:
+
 - If modular implementation is changed, embedded version provides baseline
 - If embedded version has bugs, modular decomposition makes debugging easier
 - Both must agree within numerical tolerance or investigation required
@@ -342,6 +347,7 @@ void validateDualImplementations(CalculatorCore &core)
 ### Updated Documentation
 
 **Class Count**: 370 actively registered PhysicsTerm classes
+
 - 294 base (auto-registered)
 - 8 SOURCE6 embedded (inline method)
 - 29 SOURCE6 modular (15 physics + 14 graphics, helper-based method)

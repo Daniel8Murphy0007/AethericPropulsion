@@ -111,7 +111,8 @@ Repulsive support force opposing each gravity arrangement, enabling:
 
 ### Key Capabilities
 
-- ✅ **341 PhysicsTerm classes** (294 base + 29 SOURCE6 + 47 SOURCE4 - 29 duplicates)
+- ✅ **378 PhysicsTerm classes** (294 base + 8 SOURCE6 embedded + 29 SOURCE6 modular + 47 SOURCE4)
+- ✅ **Cross-Validation**: 8 SOURCE6 physics terms with dual implementations (inline vs helper-based)
 - ✅ **SOURCE4 Integration**: UQFF + MUGE framework (47 classes)
   - 24 base UQFF physics (Ug1-4, Ub, Um, Ua + unified systems + astrophysics)
   - 9 MUGE compressed terms (expansion, envelope, quantum, fluid)

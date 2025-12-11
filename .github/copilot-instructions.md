@@ -241,7 +241,8 @@ AethericPropulsion/
 
 ### 📊 Current Metrics
 - **Total Lines of Code**: 272,000+
-- **PhysicsTerm Classes**: 341 (294 base + 29 SOURCE6 + 47 SOURCE4 - 29 duplicates)
+- **PhysicsTerm Classes**: 378 (294 base + 8 SOURCE6 embedded + 29 SOURCE6 modular + 47 SOURCE4)
+- **Cross-Validation**: 8 dual implementations for physics verification (inline vs helper methods)
 - **Source Files**: 50+ C++ files
 - **Documentation**: 5 comprehensive MD files (80KB)
 - **Build System**: CMake 3.20+ with vcpkg integration
