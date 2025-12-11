@@ -1,0 +1,65 @@
+{
+    "name": "aethericpropulsion",
+    "version": "1.0.0",
+    "description": "Unified Quantum Field Framework (UQFF) Calculator and Scientific Search Interface",
+    "homepage": "https://github.com/Daniel8Murphy0007/AethericPropulsion",
+    "license": "MIT",
+    "dependencies": [
+        {
+            "name": "curl",
+            "features": [
+                "ssl",
+                "non-http"
+            ],
+            "platform": "windows"
+        },
+        {
+            "name": "sqlite3",
+            "features": [
+                "json1",
+                "tool"
+            ],
+            "platform": "windows"
+        },
+        {
+            "name": "nlohmann-json",
+            "platform": "windows"
+        }
+    ],
+    "features": {
+        "qt": {
+            "description": "Qt-based scientific search interface",
+            "dependencies": []
+        },
+        "opencv": {
+            "description": "OpenCV video input and gesture recognition",
+            "dependencies": [
+                {
+                    "name": "opencv4",
+                    "features": [
+                        "highgui",
+                        "videoio",
+                        "dnn",
+                        "calib3d"
+                    ]
+                }
+            ]
+        },
+        "aws": {
+            "description": "AWS cloud sync (S3, Cognito)",
+            "dependencies": [
+                {
+                    "name": "aws-sdk-cpp",
+                    "features": [
+                        "s3",
+                        "cognito-idp"
+                    ]
+                }
+            ]
+        },
+        "vtk": {
+            "description": "VTK data visualization",
+            "dependencies": []
+        }
+    }
+}

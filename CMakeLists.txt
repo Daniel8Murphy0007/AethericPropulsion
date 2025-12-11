@@ -1,4 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
+
+# Use vcpkg for dependency management
+set(CMAKE_TOOLCHAIN_FILE "C:/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+
 project(AethericPropulsion VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -61,7 +65,24 @@ endif()
 # Optional Wolfram integration
 if(USE_WOLFRAM)
     target_compile_definitions(uqff_calculator PRIVATE USE_EMBEDDED_WOLFRAM)
-    # TODO: find_package(Wolfram) and link libraries
+    
+    # Wolfram Engine 14.3 WSTP integration
+    set(WOLFRAM_ROOT "C:/Program Files/Wolfram Research/Wolfram Engine/14.3")
+    set(WSTP_DEVKIT "${WOLFRAM_ROOT}/SystemFiles/Links/WSTP/DeveloperKit/Windows-x86-64")
+    set(WSTP_INCLUDE_DIR "${WSTP_DEVKIT}/CompilerAdditions")
+    set(WSTP_LIB_DIR "${WSTP_DEVKIT}/CompilerAdditions")
+    
+    if(EXISTS "${WSTP_INCLUDE_DIR}/wstp.h")
+        target_include_directories(uqff_calculator PRIVATE "${WSTP_INCLUDE_DIR}")
+        target_link_directories(uqff_calculator PRIVATE "${WSTP_LIB_DIR}")
+        target_link_libraries(uqff_calculator PRIVATE wstp64i4)
+        message(STATUS "Wolfram Engine 14.3 WSTP integration enabled")
+        message(STATUS "  Include: ${WSTP_INCLUDE_DIR}")
+        message(STATUS "  Library: ${WSTP_LIB_DIR}/wstp64i4.lib")
+    else()
+        message(WARNING "Wolfram Engine not found at expected location")
+        message(WARNING "  Expected: ${WOLFRAM_ROOT}")
+    endif()
 endif()
 
 # Windows-specific libraries
@@ -74,6 +95,9 @@ endif()
 # ============================================================================
 # Only build if Qt is available and enabled
 if(USE_QT)
+    # Add Qt 6.10.0 path (MSVC 2022 64-bit)
+    list(APPEND CMAKE_PREFIX_PATH "C:/Qt/6.10.0/msvc2022_64")
+    
     find_package(Qt6 COMPONENTS Core Widgets WebEngineWidgets Network QUIET)
     if(NOT Qt6_FOUND)
         find_package(Qt5 5.15 COMPONENTS Core Widgets WebEngineWidgets Network QUIET)
@@ -105,50 +129,74 @@ if(USE_QT)
             if(VTK_FOUND)
                 target_link_libraries(scientific_search PRIVATE ${VTK_LIBRARIES})
                 target_compile_definitions(scientific_search PRIVATE USE_VTK)
+                message(STATUS "VTK support enabled")
+            else()
+                message(WARNING "VTK not found - visualization features disabled")
             endif()
         endif()
 
-        # Optional OpenCV
+        # Optional OpenCV (vcpkg installed: opencv4:x64-windows)
         if(USE_OPENCV)
             find_package(OpenCV QUIET)
             if(OpenCV_FOUND)
-                target_link_libraries(scientific_search PRIVATE opencv_core opencv_videoio)
+                target_link_libraries(scientific_search PRIVATE opencv_core opencv_videoio opencv_highgui)
                 target_compile_definitions(scientific_search PRIVATE USE_OPENCV)
+                message(STATUS "OpenCV ${OpenCV_VERSION} support enabled")
+            else()
+                message(WARNING "OpenCV not found - video input disabled")
             endif()
         endif()
 
-        # Optional AWS SDK
+        # Optional AWS SDK (vcpkg installed: aws-sdk-cpp[s3,cognito-idp]:x64-windows)
         if(USE_AWS)
-            find_package(AWSSDK QUIET COMPONENTS s3 cognito-idp)
+            find_package(AWSSDK QUIET COMPONENTS s3 cognito-idp core)
             if(AWSSDK_FOUND)
                 target_link_libraries(scientific_search PRIVATE ${AWSSDK_LINK_LIBRARIES})
                 target_compile_definitions(scientific_search PRIVATE USE_AWS)
+                message(STATUS "AWS SDK support enabled (S3, Cognito)")
+            else()
+                message(WARNING "AWS SDK not found - cloud sync disabled")
             endif()
         endif()
 
-        # Optional dependencies - gracefully skip if not found
+        # CURL support (vcpkg installed: curl:x64-windows)
         find_package(CURL QUIET)
         if(CURL_FOUND)
             target_link_libraries(scientific_search PRIVATE CURL::libcurl)
             target_compile_definitions(scientific_search PRIVATE USE_CURL)
+            message(STATUS "CURL support enabled for HTTP requests")
+        else()
+            message(WARNING "CURL not found - NASA/MAST API disabled")
         endif()
 
+        # SQLite3 support (vcpkg installed: sqlite3:x64-windows)
         find_package(SQLite3 QUIET)
         if(SQLite3_FOUND)
             target_link_libraries(scientific_search PRIVATE SQLite::SQLite3)
             target_compile_definitions(scientific_search PRIVATE USE_SQLITE3)
+            message(STATUS "SQLite3 support enabled for local caching")
+        else()
+            message(WARNING "SQLite3 not found - offline caching disabled")
         endif()
 
+        # nlohmann-json support (vcpkg installed: nlohmann-json:x64-windows)
         find_package(nlohmann_json QUIET)
         if(nlohmann_json_FOUND)
             target_link_libraries(scientific_search PRIVATE nlohmann_json::nlohmann_json)
             target_compile_definitions(scientific_search PRIVATE USE_JSON)
+            message(STATUS "nlohmann-json support enabled for JSON parsing")
+        else()
+            message(WARNING "nlohmann-json not found - JSON parsing limited")
         endif()
 
+        # PocketSphinx for voice input (if available)
         find_package(pybind11 QUIET)
         if(pybind11_FOUND)
             target_link_libraries(scientific_search PRIVATE pybind11::embed)
             target_compile_definitions(scientific_search PRIVATE USE_PYBIND11)
+            message(STATUS "pybind11 support enabled for Python integration")
+        else()
+            message(STATUS "pybind11 not found - Python features disabled")
         endif()
 
         # Installation

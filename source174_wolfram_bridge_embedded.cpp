@@ -13,72 +13,140 @@
 // Conditional compilation - only active if Wolfram Engine libraries available
 #ifdef USE_EMBEDDED_WOLFRAM
 
-// Include Wolfram WSTP headers (requires Wolfram Engine installation)
-// #include "wstp.h"  // Uncomment when Wolfram Engine is installed
-// #include "WolframLibrary.h"
+// Include Wolfram WSTP headers (Wolfram Engine 14.3 installed)
+#include "wstp.h"
+#include "WolframLibrary.h"
 
-// WSTP connection stub (replace with actual WSTP initialization)
-// static WSLINK wstpLink = nullptr;
+// WSTP connection for Wolfram Engine communication
+static WSLINK wstpLink = nullptr;
 
 // Initialize Wolfram WSTP connection
 bool WolframInit()
 {
     std::cout << "[source174] Wolfram WSTP bridge initializing..." << std::endl;
 
-    // TODO: Replace with actual WSTP initialization
-    // int argc = 0;
-    // char** argv = nullptr;
-    // wstpLink = WSInitialize(nullptr);
-    // if (wstpLink == nullptr) {
-    //     std::cerr << "[source174] ERROR: Failed to initialize WSTP" << std::endl;
-    //     return false;
-    // }
+    // Initialize WSTP with Wolfram Engine 14.3
+    int argc = 0;
+    char **argv = nullptr;
+    int err;
 
-    std::cout << "[source174] WARNING: Wolfram WSTP stub active - install Wolfram Engine for full functionality" << std::endl;
+    wstpLink = WSInitialize(nullptr);
+    if (wstpLink == nullptr)
+    {
+        std::cerr << "[source174] ERROR: Failed to initialize WSTP" << std::endl;
+        return false;
+    }
+
+    // Open link to Wolfram Kernel
+    const char *linkArgs[] = {"-linkname", "\"C:\\Program Files\\Wolfram Research\\Wolfram Engine\\14.3\\WolframKernel.exe\" -wstp", nullptr};
+    wstpLink = WSOpenArgcArgv(wstpLink, 2, (char **)linkArgs, &err);
+
+    if (wstpLink == nullptr || err != WSEOK)
+    {
+        std::cerr << "[source174] ERROR: Failed to open WSTP link to Wolfram Kernel" << std::endl;
+        if (wstpLink)
+        {
+            const char *errMsg = WSErrorMessage(wstpLink);
+            if (errMsg)
+            {
+                std::cerr << "[source174] WSTP Error: " << errMsg << std::endl;
+            }
+        }
+        return false;
+    }
+
+    std::cout << "[source174] Wolfram Engine 14.3 WSTP connection established" << std::endl;
     return true;
 }
 
 // Evaluate Wolfram Language expression and return string result
 std::string WolframEvalToString(const std::string &expression)
 {
-    // TODO: Replace with actual WSTP evaluation
-    // if (wstpLink == nullptr) {
-    //     return "[ERROR: WSTP not initialized]";
-    // }
-    //
-    // WSPutFunction(wstpLink, "EvaluatePacket", 1);
-    // WSPutFunction(wstpLink, "ToString", 1);
-    // WSPutString(wstpLink, expression.c_str());
-    // WSEndPacket(wstpLink);
-    //
-    // const char* result;
-    // WSGetString(wstpLink, &result);
-    // std::string output(result);
-    // WSReleaseString(wstpLink, result);
-    // return output;
+    if (wstpLink == nullptr)
+    {
+        return "[ERROR: WSTP not initialized]";
+    }
 
-    std::cout << "[source174] Wolfram eval stub: " << expression << std::endl;
-    return "[Wolfram stub - result pending real WSTP integration]";
+    // Send evaluation packet to Wolfram Kernel
+    WSPutFunction(wstpLink, "EvaluatePacket", 1);
+    WSPutFunction(wstpLink, "ToString", 1);
+    WSPutString(wstpLink, expression.c_str());
+    WSEndPacket(wstpLink);
+    WSFlush(wstpLink);
+
+    // Wait for and retrieve result
+    int pkt;
+    while ((pkt = WSNextPacket(wstpLink)) && pkt != RETURNPKT)
+    {
+        WSNewPacket(wstpLink);
+    }
+
+    const char *result = nullptr;
+    if (!WSGetString(wstpLink, &result))
+    {
+        const char *errMsg = WSErrorMessage(wstpLink);
+        return std::string("[ERROR: ") + (errMsg ? errMsg : "Unknown WSTP error") + "]";
+    }
+
+    std::string output(result);
+    WSReleaseString(wstpLink, result);
+
+    return output;
 }
 
 // Evaluate Wolfram expression and return double
 double WolframEvalToDouble(const std::string &expression)
 {
-    // TODO: Replace with actual WSTP evaluation
-    std::cout << "[source174] Wolfram eval (double) stub: " << expression << std::endl;
-    return 0.0;
+    if (wstpLink == nullptr)
+    {
+        std::cerr << "[source174] ERROR: WSTP not initialized" << std::endl;
+        return 0.0;
+    }
+
+    // Send evaluation packet to Wolfram Kernel
+    WSPutFunction(wstpLink, "EvaluatePacket", 1);
+    WSPutFunction(wstpLink, "N", 1); // Force numerical evaluation
+    WSPutString(wstpLink, expression.c_str());
+    WSEndPacket(wstpLink);
+    WSFlush(wstpLink);
+
+    // Wait for and retrieve result
+    int pkt;
+    while ((pkt = WSNextPacket(wstpLink)) && pkt != RETURNPKT)
+    {
+        WSNewPacket(wstpLink);
+    }
+
+    double result = 0.0;
+    if (!WSGetReal64(wstpLink, &result))
+    {
+        // Try getting as string and parsing
+        const char *strResult = nullptr;
+        if (WSGetString(wstpLink, &strResult))
+        {
+            result = std::atof(strResult);
+            WSReleaseString(wstpLink, strResult);
+        }
+        else
+        {
+            const char *errMsg = WSErrorMessage(wstpLink);
+            std::cerr << "[source174] ERROR: " << (errMsg ? errMsg : "Unknown WSTP error") << std::endl;
+        }
+    }
+
+    return result;
 }
 
 // Close Wolfram WSTP connection
 void WolframShutdown()
 {
-    // TODO: Replace with actual WSTP cleanup
-    // if (wstpLink != nullptr) {
-    //     WSClose(wstpLink);
-    //     WSDeinitialize(wstpLink);
-    //     wstpLink = nullptr;
-    // }
-    std::cout << "[source174] Wolfram WSTP bridge shutdown" << std::endl;
+    if (wstpLink != nullptr)
+    {
+        WSClose(wstpLink);
+        WSDeinitialize(wstpLink);
+        wstpLink = nullptr;
+        std::cout << "[source174] Wolfram WSTP connection closed" << std::endl;
+    }
 }
 
 // Wrapper function for compatibility with source176
@@ -91,11 +159,8 @@ void WolframEmbeddedBridge()
     }
 
     std::cout << "[source174] Wolfram Embedded Bridge ready" << std::endl;
-    std::cout << "[source174] To enable full functionality:" << std::endl;
-    std::cout << "  1. Install Wolfram Engine (free for developers): https://www.wolfram.com/engine/" << std::endl;
-    std::cout << "  2. Uncomment WSTP headers in source174_wolfram_bridge_embedded.cpp" << std::endl;
-    std::cout << "  3. Add Wolfram Engine lib paths to CMakeLists.txt" << std::endl;
-    std::cout << "  4. Recompile with -DUSE_EMBEDDED_WOLFRAM=ON" << std::endl;
+    std::cout << "[source174] Connected to Wolfram Engine 14.3" << std::endl;
+    std::cout << "[source174] WSTP symbolic evaluation active" << std::endl;
 }
 
 #else
