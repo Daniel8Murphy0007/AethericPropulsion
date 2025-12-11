@@ -1,0 +1,58 @@
+name: CI - Build (Windows + Linux)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup CMake
+        uses: lukka/get-cmake@v4
+
+      - name: Configure (MSVC)
+        run: |
+          mkdir build
+          cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=20
+
+      - name: Build (MSVC Release)
+        run: |
+          cmake --build build --config Release --parallel
+
+      - name: Run tests (if any)
+        run: |
+          # adjust to your test runner
+          echo "No tests configured" 
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup CMake
+        uses: lukka/get-cmake@v4
+
+      - name: Configure (GCC/Clang)
+        run: |
+          mkdir build
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=20
+
+      - name: Build (Release)
+        run: |
+          cmake --build build --parallel
+
+      - name: Run tests (if any)
+        run: |
+          echo "No tests configured" 

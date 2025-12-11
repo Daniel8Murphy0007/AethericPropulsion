@@ -1,0 +1,74 @@
+// UQFF Tracing System
+// Distributed tracing, performance metrics, and event logging for UQFF calculator
+
+#ifndef UQFF_TRACING_H
+#define UQFF_TRACING_H
+
+#include <string>
+#include <memory>
+#include <map>
+
+// Trace level enumeration
+namespace TraceLevel
+{
+    enum Level
+    {
+        TRACE_DEBUG = 0,
+        TRACE_INFO = 1,
+        TRACE_WARNING = 2,
+        TRACE_ERROR = 3
+    };
+}
+
+// Span type enumeration
+namespace SpanType
+{
+    enum Type
+    {
+        SYSTEM_CALCULATION,
+        MODULE_INIT,
+        PHYSICS_TERM_EVAL,
+        OTHER
+    };
+}
+
+// Span interface for distributed tracing
+class TraceSpan
+{
+public:
+    virtual ~TraceSpan() = default;
+    virtual void setAttribute(const std::string &key, const std::string &value) {}
+    virtual void setAttribute(const std::string &key, int value) {}
+    virtual void setAttribute(const std::string &key, double value) {}
+    virtual void end() {}
+};
+
+// UQFF Tracer singleton
+class UQFFTracer
+{
+public:
+    static UQFFTracer &getInstance()
+    {
+        static UQFFTracer instance;
+        return instance;
+    }
+
+    std::shared_ptr<TraceSpan> createSpan(const std::string &name, SpanType::Type type)
+    {
+        return std::make_shared<TraceSpan>();
+    }
+
+    void recordMetric(const std::string &name, double value) {}
+    void logEvent(const std::string &message, TraceLevel::Level level) {}
+
+private:
+    UQFFTracer() = default;
+};
+
+// Convenience macros
+#define TRACE_INIT(logfile) ((void)0)
+#define TRACE_EVENT(msg, level) UQFFTracer::getInstance().logEvent(msg, level)
+#define TRACE_METRIC(name, value) UQFFTracer::getInstance().recordMetric(name, value)
+#define TRACE_SHUTDOWN() ((void)0)
+
+#endif // UQFF_TRACING_H

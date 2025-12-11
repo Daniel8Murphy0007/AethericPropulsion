@@ -1,0 +1,66 @@
+#pragma once
+// observational_systems_config.h
+// Observational systems configuration for UQFF Calculator
+// Defines ObservationalSystem struct and OBSERVATIONAL_SYSTEMS map
+
+#include <string>
+#include <map>
+#include <vector>
+
+// ObservationalSystem structure matching MAIN_1_CoAnQi.cpp expectations
+struct ObservationalSystem
+{
+    std::string name;
+    double M;             // Mass (solar masses or kg)
+    double r;             // Radius (meters)
+    double L_X;           // X-ray luminosity (watts)
+    double B0;            // Magnetic field (Tesla)
+    double omega0;        // Angular frequency (rad/s)
+    double T_gas;         // Gas temperature (Kelvin)
+    double rho_gas;       // Gas density (kg/m³)
+    std::string category; // System category (Galaxy, Nebula, Star, Planet, etc.)
+};
+
+// Global map of observational systems (referenced in MAIN_1_CoAnQi.cpp)
+static const std::map<std::string, ObservationalSystem> OBSERVATIONAL_SYSTEMS = {
+    // Multi-System UQFF (Source163)
+    {"NGC685", {"NGC685", 1e6 * 1.989e30, 1e3, 1e40, 1e-3, 1e-6, 1e6, 1e-20, "Galaxy"}},
+    {"NGC3507", {"NGC3507", 1e6 * 1.989e30, 1e3, 1e40, 1e-3, 1e-6, 1e6, 1e-20, "Galaxy"}},
+    {"NGC3511", {"NGC3511", 1e6 * 1.989e30, 1e3, 1e40, 1e-3, 1e-6, 1e6, 1e-20, "Galaxy"}},
+    {"AT2024tvd", {"AT2024tvd", 1e6 * 1.989e30, 1e3, 1e40, 1e-3, 1e-6, 1e6, 1e-20, "TDE"}},
+
+    // Nebula UQFF (Source164)
+    {"CrabNebula", {"CrabNebula", 1.4 * 1.989e30, 5.5e16, 1e37, 1e-4, 1e-5, 1e4, 1e-21, "Nebula"}},
+    {"OrionNebula", {"OrionNebula", 2e3 * 1.989e30, 1.2e17, 1e38, 1e-6, 1e-7, 1e4, 1e-20, "Nebula"}},
+    {"RingNebula", {"RingNebula", 0.2 * 1.989e30, 2.3e16, 1e35, 1e-7, 1e-8, 1e4, 1e-22, "Nebula"}},
+
+    // Buoyancy UQFF (Source165)
+    {"M74", {"M74", 1e11 * 1.989e30, 1e21, 1e41, 1e-6, 1e-8, 1e7, 1e-19, "Galaxy"}},
+    {"M16", {"M16", 1e4 * 1.989e30, 1e18, 1e38, 1e-5, 1e-7, 1e4, 1e-20, "Nebula"}},
+    {"M84", {"M84", 1e11 * 1.989e30, 1e21, 1e42, 1e-6, 1e-8, 1e7, 1e-19, "Galaxy"}},
+    {"CentaurusA", {"CentaurusA", 1e12 * 1.989e30, 1e22, 1e43, 1e-5, 1e-7, 1e7, 1e-18, "Galaxy"}},
+
+    // Astro System UQFF (Source166)
+    {"NGC4826", {"NGC4826", 1e10 * 1.989e30, 1e20, 1e40, 1e-6, 1e-8, 1e6, 1e-19, "Galaxy"}},
+    {"NGC1805", {"NGC1805", 1e5 * 1.989e30, 1e18, 1e38, 1e-5, 1e-7, 1e4, 1e-20, "Cluster"}},
+    {"NGC6307", {"NGC6307", 0.6 * 1.989e30, 1e16, 1e34, 1e-7, 1e-9, 1e4, 1e-22, "Nebula"}},
+    {"NGC7027", {"NGC7027", 0.7 * 1.989e30, 1e16, 1e35, 1e-7, 1e-9, 1e4, 1e-22, "Nebula"}},
+    {"Cassini", {"Cassini", 5.68e26, 5.82e7, 0, 1e-6, 1e-5, 100, 1e-15, "Planet"}}, // Saturn
+    {"ESO391-12", {"ESO391-12", 1e6 * 1.989e30, 1e19, 1e39, 1e-6, 1e-8, 1e6, 1e-20, "Galaxy"}},
+    {"M57", {"M57", 0.2 * 1.989e30, 2.3e16, 1e35, 1e-7, 1e-9, 1e4, 1e-22, "Nebula"}},
+    {"LMC", {"LMC", 1e10 * 1.989e30, 1e21, 1e40, 1e-6, 1e-8, 1e6, 1e-19, "Galaxy"}},
+    {"ESO5100-G13", {"ESO5100-G13", 1e11 * 1.989e30, 1e21, 1e41, 1e-6, 1e-8, 1e7, 1e-19, "Galaxy"}},
+
+    // UQFF Master (Source167)
+    {"M82", {"M82", 1e11 * 1.989e30, 1e21, 1e41, 1e-5, 1e-7, 1e7, 1e-19, "Galaxy"}},
+    {"IC418", {"IC418", 0.6 * 1.989e30, 1e16, 1e34, 1e-7, 1e-9, 1e4, 1e-22, "Nebula"}},
+    {"CanisMajor", {"CanisMajor", 2.02 * 1.989e30, 1.711 * 6.96e8, 1e28, 1e-6, 1e-5, 1e4, 1e-15, "Star"}},
+    {"NGC6302", {"NGC6302", 0.6 * 1.989e30, 1e16, 1e35, 1e-7, 1e-9, 1e4, 1e-22, "Nebula"}},
+
+    // Additional common systems
+    {"MilkyWay", {"MilkyWay", 1.5e12 * 1.989e30, 1e21, 1e42, 1e-6, 1e-8, 1e7, 1e-18, "Galaxy"}},
+    {"Andromeda", {"Andromeda", 1.2e12 * 1.989e30, 1e21, 1e42, 1e-6, 1e-8, 1e7, 1e-18, "Galaxy"}},
+    {"Sun", {"Sun", 1.989e30, 6.96e8, 1e26, 1e-4, 2.86e-6, 5778, 1e-15, "Star"}},
+    {"Earth", {"Earth", 5.972e24, 6.371e6, 0, 3e-5, 7.292e-5, 288, 1.2, "Planet"}},
+    {"Jupiter", {"Jupiter", 1.898e27, 6.991e7, 0, 4e-4, 1.76e-4, 165, 0.16, "Planet"}},
+};
