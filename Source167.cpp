@@ -53,7 +53,7 @@ enum GeometryType
 // DPM VARIABLES STRUCTURE
 // ===========================================================================================
 
-struct DPMVars
+struct DPMVars_S167
 {
     double f_UA_prime; // f_UA' = (Z_max - Z) / Z_max (Universal Ambient fraction)
     double f_SCm;      // f_SCm = Z / Z_max (Superconducting matter fraction)
@@ -124,7 +124,7 @@ public:
     }
 
     // U_g1: DPM force with electrostatic barrier
-    double calculate_U_g1(const std::vector<DPMVars> &vars, GeometryType geom = SPHERICAL) const
+    double calculate_U_g1(const std::vector<DPMVars_S167> &vars, GeometryType geom = SPHERICAL) const
     {
         double sum = 0.0;
         for (const auto &v : vars)
@@ -144,7 +144,7 @@ public:
     }
 
     // U_g3: Combined U_i + U_m force
-    double calculate_U_g3(const DPMVars &vars) const
+    double calculate_U_g3(const DPMVars_S167 &vars) const
     {
         double term1 = ki_ * vars.f_UA_prime * vars.nu_THz * vars.R_EB;
         double term2 = km_ * vars.f_SCm * vars.nu_res;
@@ -256,12 +256,12 @@ public:
     }
 
     // Master UQFF Force calculation
-    double calculate_master_force(const std::vector<DPMVars> &vars, const UQFFCoreModule &core)
+    double calculate_master_force(const std::vector<DPMVars_S167> &vars, const UQFFCoreModule &core)
     {
         double F_ug1 = core.calculate_U_g1(vars, SPHERICAL);
 
         // Average vars for U_g3 (simplified - use first element)
-        DPMVars avg_var;
+        DPMVars_S167 avg_var;
         if (!vars.empty())
         {
             avg_var = vars[0];
@@ -356,7 +356,8 @@ UQFFSystem create_NGC7027_system()
 // ===========================================================================================
 // MAIN DEMONSTRATION
 // ===========================================================================================
-
+// NOTE: This main() function conflicts with source10.cpp - commented out for library compilation
+/* main() commented - Source167 is now a library module
 int main()
 {
     std::cout << "=== Source167: UQFF Core Calculations Module ===" << std::endl;
@@ -368,7 +369,7 @@ int main()
     UQFFCoreModule core(1.0, 1.0, 1.0, 1.0, K_ETA_BASE);
 
     // Create DPM variables (example)
-    std::vector<DPMVars> vars(1);
+    std::vector<DPMVars_S167> vars(1);
     vars[0] = {
         0.999,      // f_UA_prime = (1000-1)/1000
         0.001,      // f_SCm = 1/1000
@@ -463,6 +464,9 @@ int main()
 
     return 0;
 }
+*/
+// NOTE: main() function above is commented out to prevent duplicate main() conflict when included in MAIN_1_CoAnQi.cpp
+// Source167.cpp serves as a library module providing UQFF Core calculations
 
 // ============================================================================
 // WOLFRAM TERM REGISTRATION FUNCTION

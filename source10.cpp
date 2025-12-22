@@ -703,20 +703,21 @@ const double m_e = 9.11e-31;
 const double q = 1.6e-19;
 const double mu_B = 9.274e-24;
 const double g_factor = 2.0;
-const double pc = 3.086e16;            // Parsec in m
-const double Rsun = 6.96e8;            // Solar radius in m
-const double Gauss_to_T = 1e-4;        // Gauss to Tesla
-const double erg_per_s_to_W = 1e-7;    // erg/s to W
-const double ly = 9.461e15;            // Light year in m
-const double kpc = 1000 * pc;          // Kiloparsec
-const double Mpc = 1e6 * pc;           // Megaparsec
-const double keV_to_K = 1.16e7;        // keV to K (approx k_B T)
-const double f_gw = 100.0;             // Hz for NS mergers
-const double d_f = 2.5;                // Fractal dimension for multi-scale E_cm
-const double r_atomic = 1e-10;         // m for fractal scaling
-const double E_atomic = 1e-18;         // J for fractal scaling
-const double mu_0 = 4 * PI * 1e-7;     // Permeability of free space
-const double epsilon_0 = 8.85e-12;     // Permittivity of free space
+const double pc = 3.086e16;         // Parsec in m
+const double Rsun = 6.96e8;         // Solar radius in m
+const double Gauss_to_T = 1e-4;     // Gauss to Tesla
+const double erg_per_s_to_W = 1e-7; // erg/s to W
+const double ly = 9.461e15;         // Light year in m
+const double kpc = 1000 * pc;       // Kiloparsec
+const double Mpc = 1e6 * pc;        // Megaparsec
+const double keV_to_K = 1.16e7;     // keV to K (approx k_B T)
+const double f_gw = 100.0;          // Hz for NS mergers
+const double d_f = 2.5;             // Fractal dimension for multi-scale E_cm
+const double r_atomic = 1e-10;      // m for fractal scaling
+const double E_atomic = 1e-18;      // J for fractal scaling
+// NOTE: mu_0 and epsilon_0 already defined in MAIN_1_CoAnQi.cpp - commented to avoid redefinition
+// const double mu_0 = 4 * PI * 1e-7;     // Permeability of free space
+// const double epsilon_0 = 8.85e-12;     // Permittivity of free space
 const double EFSC_PI = 3.604e-16;      // J from Aether doc
 const double W_RES = 1.424e14;         // rad/s resonant frequency
 const double DELTA_E_PHASE = 5.52e-17; // J
@@ -784,7 +785,8 @@ struct SystemParams
 */
 
 // Use extracted SystemParams from Core/SystemCatalogue
-using UQFFCatalogue::SystemParams;
+// NOTE: UQFFCatalogue namespace does not exist - using local SystemParams struct instead
+// using UQFFCatalogue::SystemParams;
 
 // COMMENTED OUT: Systems map now initialized via UQFFCatalogue::initializeSystemCatalogue()
 /*
@@ -839,11 +841,14 @@ map<string, SystemParams> systems = {
 // END COMMENTED SYSTEMS MAP
 
 // PHASE 1 WEEK 1: Initialize systems map from extracted catalogue
-std::map<std::string, UQFFCatalogue::SystemParams> systems = UQFFCatalogue::initializeSystemCatalogue();
+// NOTE: UQFFCatalogue namespace does not exist yet - using placeholder
+// TODO: Implement UQFFCatalogue or use Core::SystemCatalogue instead
+std::map<std::string, SystemParams> systems; // Empty map placeholder
 
 // PHASE 1 WEEK 1 EXTRACTION: compute_E_cm, dpm_life_proportion, F_U_Bi_i, compressed_g moved to Core/SystemCatalogue.cpp
 // Original functions commented out, use UQFFCatalogue:: namespace versions instead
 // Using directives for convenience:
+/* UQFFCatalogue namespace not implemented yet
 using UQFFCatalogue::compressed_g;
 using UQFFCatalogue::compute_E_cm;
 using UQFFCatalogue::dpm_life_proportion;
@@ -854,6 +859,7 @@ using UQFFCatalogue::F_jet_rel;
 using UQFFCatalogue::F_U_Bi_i;
 using UQFFCatalogue::SystemParams;
 using UQFFCatalogue::validation_pipeline;
+*/
 
 /* BEGIN COMMENTED DUPLICATE FUNCTIONS (now in Core/SystemCatalogue.cpp)
 
@@ -1012,6 +1018,8 @@ END COMMENTED DUPLICATE FUNCTIONS */
 // Extracted key parameters and equations from HTML/JS code for C++ implementation
 
 // Simulation 1: Quantum Atom Construction (from "atom_construction_2.html")
+// NOTE: This function is defined multiple times in this file - keeping first occurrence
+/* Duplicate definition - commented out
 void simulate_atom_construction()
 {
     // Constants from HTML
@@ -1044,8 +1052,11 @@ void simulate_atom_construction()
     cout << "Vacuum Energy Density: " << VACUUM_ENERGY << " J/m " << endl;
     cout << "Reactor Efficiency Gain: " << REACTOR_EFFICIENCY << ":1" << endl;
 }
+*/
 
 // Simulation 2: Pi to Solfeggio Frequencies (from "PI_construction.html")
+// NOTE: This function is defined multiple times in this file - keeping first occurrence
+/* Duplicate definition - commented out
 void simulate_pi_solfeggio(const string &pi_str)
 {
     // Solfeggio frequencies from HTML
@@ -1111,8 +1122,11 @@ void simulate_unified_field(double M_s = 1.989e30, double mu_s = 1e20, double om
 
     cout << "Ug = " << Ug << ", Um = " << Um << ", Ui = " << Ui << ", Ua = " << Ua << endl;
 }
+*/
 
 // Simulation 5: Star Magic Unified Field (from "SystemAnalysisSimulator_4.html")
+// NOTE: This function is defined multiple times in this file - keeping first occurrence
+/* Duplicate definition - commented out
 void simulate_star_magic()
 {
     // Constants from HTML (e.g., star systems)
@@ -1141,6 +1155,8 @@ void simulate_red_dwarf_plasma(double num_plasmoids = 50, double velocity = 0.5,
 
 // Interactive main (expanded for system selection and output UQFF/F_U_Bi_i/compressed g)
 // Also performs all document calculations in comments/output for reference
+// NOTE: This main() function conflicts with Source167.cpp - commented out for library compilation
+/* main() commented - source10 is now a library module
 int main()
 {
     cout << "UQFF Calculator (Interactive, Expandable)" << endl;
@@ -1333,6 +1349,9 @@ int main()
 
     return 0;
 }
+*/
+// NOTE: main() function above is commented out to prevent duplicate main() conflict when included in MAIN_1_CoAnQi.cpp
+// source10.cpp serves as a library module providing UQFF calculation functions
 /*
 
 // Watermark: Copyright - Daniel T. Murphy, daniel.murphy00@gmail.com, created by DaVinci-Grok, analyzed by Grok 3, SuperGrok, created by xAI, dated August 27, 2025, 12:00 PM EDT, location 41.0997  N, 80.6495  W (Youngstown, OH, USA). Subject matter: Complete C++ UQFF Visual Calculator with All Catalogued Elements.
